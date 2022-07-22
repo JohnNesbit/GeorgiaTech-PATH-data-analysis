@@ -4,8 +4,18 @@ import os
 
 # import csvs into pandas dataframes, combine them
 path = "ICPSR_36498-V16 (1)/ICPSR_36498" # put path to list of "DS" directories of "deliniated" version
-wantedCols = ["R04_EVER_NEVER_CIGS"] # wanted columns of information
 
+yes_or_no_questions = []
+wantedCols = ["R04_EVER_NEVER_CIGS"] # wanted columns of information
+with open("ColumnInfo.txt", "r") as f: # text file of comma seperated columns we want, put 0 at front to deliniate it is a yes or no question
+	for col in f.read().split(","):
+		
+		if(col[0] == "0"):
+			wantedCols.append(col[1:])
+			yes_or_no_questions.append(col[1:])
+		else:
+			wantedCols.append(col)
+			
 def findData(path):
 	for file in os.listdir(path):
 		if("-Data.tsv" in file):
@@ -34,7 +44,7 @@ for i in os.listdir(path):
 
 # delete those who have smoked cigarettes before
 import gc
-nonSmokerDf = nonSmokerDf["R04_EVER_NEVER_CIGS"] == 2 # 2 is never user - DS4001/36498-4001-Questionnaire.pdf pg 25
+nonSmokerDf = nonSmokerDf[nonSmokerDf["R04_EVER_NEVER_CIGS"] == 2] # 2 is never user - DS4001/36498-4001-Questionnaire.pdf pg 25
 gc.collect()
 
 cols = nonSmokerDf.columns
@@ -45,7 +55,6 @@ for i in cols: # print the cols we kept, ensure everything is there
 
 # change NULLs to 0
 # only on questions where this makes sense
-yes_or_no_questions = []
 nonSmokerDf[yes_or_no_questions][nonSmokerDf[yes_or_no_questions] != 1 and nonSmokerDf[yes_or_no_questions] != 2] = 0
 
 # create csv and save filtered data"""
