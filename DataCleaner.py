@@ -55,7 +55,7 @@ for i in cols: # print the cols we kept, ensure everything is there
 	print(i)
 
 for col in foundWantedCols:
-	nonSmokerDf.loc[:, (col, nonSmokerDf[col] < 1)] = 0 # get rid of negative answers and turn into 0
+	nonSmokerDf.loc[nonSmokerDf[col] < 1, col] = 0 # get rid of negative answers and turn into 0
 
 # create csv and save filtered data"""
 nonSmokerDf.to_csv("Cleaned_data.csv")
