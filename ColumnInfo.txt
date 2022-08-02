@@ -12,3 +12,6 @@ R03_YG9012 - curious of filtered cigar
 R04_YU1103 - curious of snus
 R01R_Y_YE1006: DERIVED - how old when first tried e-cig
 R01_YE1022: In past 30 days, number of days used an e-cigarette
+
+
+66 onwards(john's task):
