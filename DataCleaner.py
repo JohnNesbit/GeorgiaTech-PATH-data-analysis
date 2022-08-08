@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
+
 # import csvs into pandas dataframes, combine them
 path = "ICPSR_36498-V16 (1)/ICPSR_36498" # put path to list of "DS" directories of "deliniated" version
 
@@ -32,6 +33,8 @@ for i in range(2, 6):
 		smokers = smokers.append(getSmokers(waves[str(i) + "_" + str(j)], "R0"+ str(i) +"R_"+ adict[j] +"_NEW_CIGS", waves[str(i-1) + "_2"]), sort=True)
 
 print(len(smokers)) # 1824 youths started smoking during this experiment
+smokers["Target"] = list(np.ones(len(smokers)))
+
 
 for col in smokers.columns: # have to go through cols manually instead of np.where because NaNs must be excepted
 	if col == "PERSONID" or col == "CASEID":
@@ -45,6 +48,7 @@ for col in smokers.columns: # have to go through cols manually instead of np.whe
 		continue
 
 	smokers[col] = np.where(np.nan_to_num(smokers[col]) < 0, np.nan, smokers[col])
+	
 
 nanlist = [] # linked list for nans and columns
 for col in smokers.columns:
