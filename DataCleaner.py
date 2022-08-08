@@ -27,10 +27,16 @@ getSmokers = lambda wave, var, previousWave: previousWave[np.isin(previousWave["
 adict = {1:"A", 2:"Y"}
 for i in range(2, 6):
 	for j in range(1, 3):
-		if (i == 2 and j == 1):
+		if i == 2 and j == 1:
 			smokers = getSmokers(waves["2_1"], "R02R_A_NEW_CIGS", waves["1_2"])
+			print(len(smokers))
+			print(len([i for l in range(len(smokers))]))
+			smokers["WAVE"] = [i for l in range(len(smokers))]# create wave variable for the time-period they are in
+			# this wave variable is mainly for balancing the dataset
 			continue
-		smokers = smokers.append(getSmokers(waves[str(i) + "_" + str(j)], "R0"+ str(i) +"R_"+ adict[j] +"_NEW_CIGS", waves[str(i-1) + "_2"]), sort=True)
+		sm = getSmokers(waves[str(i) + "_" + str(j)], "R0"+ str(i) +"R_"+ adict[j] +"_NEW_CIGS", waves[str(i-1) + "_2"])
+		sm["WAVE"] = [i for l in range(len(sm))]
+		smokers = smokers.append(sm, sort=True) # create wave variable
 
 print(len(smokers)) # 1824 youths started smoking during this experiment
 smokers["Target"] = list(np.ones(len(smokers)))
@@ -48,7 +54,7 @@ for col in smokers.columns: # have to go through cols manually instead of np.whe
 		continue
 
 	smokers[col] = np.where(np.nan_to_num(smokers[col]) < 0, np.nan, smokers[col])
-	
+
 
 nanlist = [] # linked list for nans and columns
 for col in smokers.columns:
@@ -65,3 +71,5 @@ for l in nanlist:
 
 smokers = smokers.drop(columns=colist)
 print(len(smokers.columns))
+
+smokers.to_csv("Smokers4.csv")
