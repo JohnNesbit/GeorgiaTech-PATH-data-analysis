@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import os
 
-
 # import csvs into pandas dataframes, combine them
 path = "ICPSR_36498-V16 (1)/ICPSR_36498" # put path to list of "DS" directories of "deliniated" version
 
@@ -39,10 +38,10 @@ for i in range(2, 6):
 		smokers = smokers.append(sm, sort=True) # create wave variable
 
 print(len(smokers)) # 1824 youths started smoking during this experiment
-smokers["Target"] = list(np.ones(len(smokers)))
+smokers["Target"] = list(np.ones(len(smokers))) # mark smokers as smokers with extra variable
 
 
-for col in smokers.columns: # have to go through cols manually instead of np.where because NaNs must be excepted
+for col in smokers.columns: # have to go through cols manually instead of np.where because strings must be excepted
 	if col == "PERSONID" or col == "CASEID":
 		continue
 
@@ -63,6 +62,7 @@ for col in smokers.columns:
 print(smokers.columns[np.argmax(np.array(nanlist))], ": ", max(nanlist)) # see how many nans are within highest var
 # was 1428/1824. clearly not a relevant or acceptable variable
 
+# drop all cols with nans
 print(len(smokers.columns))
 colist = []
 for l in nanlist:
@@ -72,4 +72,15 @@ for l in nanlist:
 smokers = smokers.drop(columns=colist)
 print(len(smokers.columns))
 
-smokers.to_csv("Smokers4.csv")
+
+for i in range(2, 6): # loop through waves
+	add = waves[str(i) + "_2"][np.logical_not(np.isin(waves[str(i) + "_2"]["PERSONID"], smokers["PERSONID"]))].copy() # ensure no duplicates
+	add = add[:smokers["WAVE"].tolist().count(i)]  # add matching data from each wave
+	add["Target"] = list(np.zeros(len(add))) # set smokers to false for the new data
+
+	smokers = smokers.append(add, sort=True) # append to smokers
+	print(len(smokers))
+	# after this data has 50% of people who become smokers, 50% who do not
+
+# roughly 3600 People across 5 waves, 4700 cleaned variables
+smokers.to_csv("CleanedData.csv") # save data
