@@ -2,10 +2,24 @@
 import xgboost as xgb
 import pandas as pd
 
-data = pd.read_csv("Unsqueeze.csv") # NansIn yields 81.7%, Squeeze(to 50) yields 78% and Unsqueeze yields 81.5%
+data = pd.read_csv("DirtyDataSqueeze.csv") # NansIn yields 81.7%, Squeeze(to 50) yields 78% and Unsqueeze yields 81.5%
+#print(data.columns[63])
+impVal = False
 
-for i in data.columns:
-    print(i)
+if impVal:
+    impVals = pd.read_csv("UnsqueezedImportanceValues.csv")
+    print(impVals[impVals["Unnamed: 0"] == 0]["score"])
+    dropCols = []
+
+    # drop low-importance value cols
+    for i in data.columns:
+        if i == "Unnamed: 0" or i == "Target":
+            continue
+        #print(list(impVals[impVals["Unnamed: 0"] == int(i)]["score"].items()))
+        if impVals[impVals["Unnamed: 0"] == int(i)]["score"].tolist()[0] < 10:
+            dropCols.append(i)
+        #print(i)
+    data = data.drop(columns=dropCols)
 
 from sklearn.model_selection import train_test_split
 
@@ -35,4 +49,4 @@ values = list(feature_important.values())
 
 data = pd.DataFrame(data=values, index=keys, columns=["score"]).sort_values(by = "score", ascending=False)
 print(data)
-data.to_csv("UnsqueezedImportanceValues.csv")
+data.to_csv("DirtyUnsqueezedImportanceValues.csv")
