@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class Network(nn.Module):
 
-	def __init__(self, in_dim, hid_dim=512): # 84% accuracy as of now
+	def __init__(self, in_dim, hid_dim=256): # 84% accuracy as of now
 		super().__init__()
 
 		self.indim = in_dim
@@ -14,8 +14,6 @@ class Network(nn.Module):
 		self.b2 = nn.BatchNorm1d(hid_dim//4)
 		self.fc3 = nn.Linear(hid_dim//4,hid_dim//8)
 		self.b3 = nn.BatchNorm1d(hid_dim//8)
-		self.fc3a = nn.Linear(hid_dim//8,hid_dim//8)
-		self.b3a = nn.BatchNorm1d(hid_dim//8)
 		self.fc4 = nn.Linear(hid_dim//8,2)
 		self.softmax = nn.Softmax()
 		self.relu = nn.ReLU()
@@ -29,17 +27,15 @@ class Network(nn.Module):
 		x = self.relu(self.b2(x))
 		x = self.fc3(x)
 		x = self.relu(self.b3(x))
-		x = self.fc3a(x)
-		x = self.relu(self.b3a(x))
 		x = self.softmax(self.fc4(x))
 
 		return x
 
 import pandas as pd
 bs = 64
-epochs = 600
+epochs = 120
 
-data = pd.read_csv("Unsqueeze.csv")
+data = pd.read_csv("DirtyDataSqueeze.csv")
 cols = len(data.columns) - 2
 from sklearn.model_selection import train_test_split
 
@@ -56,7 +52,6 @@ def test(model):
 	c, t = 0, 0
 	for x, y in zip(X_test, y_test):
 		pred = model(x)
-		#print(pred.argmax(axis=1).shape)
 		for x, y in zip(pred.argmax(axis=1), y):
 			if x == y:
 				c += 1
