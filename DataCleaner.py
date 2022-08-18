@@ -32,13 +32,13 @@ adict = {1:"A", 2:"Y"}
 for i in range(2, 6):
 	for j in range(1, 3):
 		if i == 2 and j == 1:
-			smokers = getSmokers(waves["2_1"], "R_A_NEW_CIGS", waves["1_2"])
+			smokers = getSmokers(waves["2_1"], "R_A_NEW_CIGS", waves["1_2"]).copy()
 			print(len(smokers))
 			print(len([i for l in range(len(smokers))]))
 			smokers["WAVE"] = [i for l in range(len(smokers))]# create wave variable for the time-period they are in
 			# this wave variable is mainly for balancing the dataset
 			continue
-		sm = getSmokers(waves[str(i) + "_" + str(j)], "R_"+ adict[j] +"_NEW_CIGS", waves[str(i-1) + "_2"])
+		sm = getSmokers(waves[str(i) + "_" + str(j)], "R_"+ adict[j] +"_NEW_CIGS", waves[str(i-1) + "_2"]).copy()
 		sm["WAVE"] = [i for l in range(len(sm))]
 		smokers = smokers.append(sm, sort=True) # create wave variable
 
@@ -47,8 +47,10 @@ smokers["Target"] = list(np.ones(len(smokers))) # mark smokers as smokers with e
 
 for i in range(2, 6): # loop through waves
 	add = waves[str(i) + "_2"][np.logical_not(np.isin(waves[str(i) + "_2"]["PERSONID"], smokers["PERSONID"]))].copy() # ensure no duplicates
+	add = add[add["R_Y_EVR_CIGS"] == 2]
 	add = add[:smokers["WAVE"].tolist().count(i)]  # add matching data from each wave
 	add["Target"] = list(np.zeros(len(add))) # set smokers to false for the new data
+	add["WAVE"] = [i for l in range(len(add))]
 
 	smokers = smokers.append(add, sort=True) # append to smokers
 	print(len(smokers))
@@ -82,11 +84,14 @@ print(nanlist)
 print(len(smokers.columns))
 colist = []
 for _, l in enumerate(nanlist):
-	if l >= 600:
+	if l >= 2000:
 		colist.append(smokers.columns[2+_])
 
 smokers = smokers.drop(columns=colist)
 print(len(smokers.columns))
 
+for i, ii in zip(smokers["WAVE"], smokers["Target"]):
+	print(i, ": ", ii)
+
 # roughly 3600 People across 5 waves, 4700 cleaned variables
-smokers.to_csv("Data.csv") # save data
+smokers.to_csv("DirtyData2000.csv") # save data
