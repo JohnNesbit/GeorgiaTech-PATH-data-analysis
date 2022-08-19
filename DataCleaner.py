@@ -34,12 +34,12 @@ for i in range(2, 6):
 		if i == 2 and j == 1:
 			smokers = getSmokers(waves["2_1"], "R_A_NEW_CIGS", waves["1_2"]).copy()
 			print(len(smokers))
-			print(len([i for l in range(len(smokers))]))
+			print(len([i-1 for l in range(len(smokers))]))
 			smokers["WAVE"] = [i for l in range(len(smokers))]# create wave variable for the time-period they are in
 			# this wave variable is mainly for balancing the dataset
 			continue
 		sm = getSmokers(waves[str(i) + "_" + str(j)], "R_"+ adict[j] +"_NEW_CIGS", waves[str(i-1) + "_2"]).copy()
-		sm["WAVE"] = [i for l in range(len(sm))]
+		sm["WAVE"] = [i-1 for l in range(len(sm))]
 		smokers = smokers.append(sm, sort=True) # create wave variable
 
 print(len(smokers)) # 1824 youths started smoking during this experiment
@@ -84,7 +84,7 @@ print(nanlist)
 print(len(smokers.columns))
 colist = []
 for _, l in enumerate(nanlist):
-	if l >= 2000:
+	if l >= 3000:
 		colist.append(smokers.columns[2+_])
 
 smokers = smokers.drop(columns=colist)
@@ -94,4 +94,4 @@ for i, ii in zip(smokers["WAVE"], smokers["Target"]):
 	print(i, ": ", ii)
 
 # roughly 3600 People across 5 waves, 4700 cleaned variables
-smokers.to_csv("DirtyData2000.csv") # save data
+smokers.to_csv("DirtyData3000.csv") # save data
