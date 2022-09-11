@@ -2,8 +2,7 @@
 import xgboost as xgb
 import pandas as pd
 
-data = pd.read_csv("DirtyDataSqueeze.csv") # NansIn yields 81.7%, Squeeze(to 50) yields 78% and Unsqueeze yields 81.5%
-#print(data.columns[63])
+data = pd.read_csv("DirtyDataSqueeze.csv")
 impVal = False
 
 if impVal:
@@ -28,9 +27,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 xgb_cl = xgb.XGBClassifier()
-
 xgb_cl.fit(X_train, y_train)
-
 preds = xgb_cl.predict(X_test)
 
 c=0
@@ -41,7 +38,6 @@ for y, i in zip(y_test, preds):
     t += 1
 
 print("acc: " + str(c/t))
-
 
 feature_important = xgb_cl.get_booster().get_score(importance_type='weight')
 keys = list(feature_important.keys())
