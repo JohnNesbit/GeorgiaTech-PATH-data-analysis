@@ -67,11 +67,8 @@ print(y_train.shape)
 for i in range(epochs):
 	for x, y in zip(X_train, y_train):
 		pred = model(x)
-
 		loss = nn.CrossEntropyLoss()(pred, y)
-
 		loss.backward()
 		optimizer.step()
 		optimizer.zero_grad()
-
 	print("accuracy: ", test(model))
